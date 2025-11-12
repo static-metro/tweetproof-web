@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>tweetproof · web signer</title>
+  <meta name="description" content="Sign tweets with Ed25519 in your browser and verify using the public key in your bio." />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/static/css/styles.css" />
+</head>
+<body class="bg-app text-ink">
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="topbar__wrap">
+      <a class="brand" href="/" aria-label="tweetproof">tp</a>
+      <nav class="nav">
+        <a class="nav__link" href="https://github.com/static-metro/tweetproof" target="_blank" rel="noopener">Product</a>
+        <a class="nav__link" href="https://github.com/static-metro/tweetproof-web" target="_blank" rel="noopener">Repo</a>
+        <a class="nav__link nav__link--cta" href="#app">Open App</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero" id="hero">
+    <div class="hero__grid"></div>
+    <div class="hero__wrap">
+      <h1 class="hero__title">
+        Your fastest path<br class="hidden lg:block"> to verified tweets
+      </h1>
+      <p class="hero__subtitle">
+        Build, sign, and verify with unapologetic simplicity. From your first tweet to your billionth.
+      </p>
+      <div class="hero__cta">
+        <a href="#app" class="btn btn--primary">Get Started</a>
+        <a href="https://github.com/static-metro/tweetproof" target="_blank" rel="noopener" class="btn btn--ghost">Read the CLI</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- App -->
+  <main id="app" class="app">
+    <div class="app__wrap">
+
+      <section class="panel">
+        <div class="panel__header">
+          <h2>Key management</h2>
+          <div class="panel__actions">
+            <button id="btn-generate" class="btn btn--primary">Generate</button>
+            <button id="btn-save" class="btn btn--secondary">Save locally</button>
+            <button id="btn-clear" class="btn btn--muted">Clear</button>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="field">
+            <label>Private key seed <span>(hex, 64 chars)</span></label>
+            <input id="seed" class="input mono" placeholder="e.g. 9f1c..." spellcheck="false" />
+            <div class="row gap-2 mt-2">
+              <button id="btn-copy-seed" class="btn btn--line">Copy seed</button>
+              <button id="btn-paste-seed" class="btn btn--line">Paste from clipboard</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Public key (hex, derived)</label>
+            <input id="pubhex" class="input mono" readonly placeholder="Derived public key in hex" />
+            <label class="mt-3">Bio line</label>
+            <div class="row gap-2">
+              <input id="bioline" class="input mono flex-1" readonly placeholder="ed25519: &lt;Base64PublicKey&gt;" />
+              <button id="btn-copy-bio" class="btn btn--line">Copy</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="hint mt-3">Keys are stored in a cookie and mirrored to localStorage on your device. Don’t host this on untrusted domains.</p>
+      </section>
+
+      <section class="panel">
+        <div class="panel__header">
+          <h2>Sign a tweet</h2>
+          <div id="charcount" class="muted">0 chars</div>
+        </div>
+        <textarea id="tweet" class="textarea" rows="6" placeholder="Type your tweet here..."></textarea>
+        <div class="row gap-2 mt-2">
+          <button id="btn-sign" class="btn btn--primary">Sign</button>
+          <button id="btn-copy-tweet" class="btn btn--line">Copy tweet only</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel__header">
+          <h2>Signed output</h2>
+          <button id="btn-copy-output" class="btn btn--line">Copy</button>
+        </div>
+        <textarea id="output" class="textarea" rows="6" readonly></textarea>
+        <p class="hint">Format matches the CLI: tweet text on line 1, signature on line 2 as <code>//sig:Base64Signature</code>.</p>
+      </section>
+
+      <section class="panel">
+        <h2 class="mb-4">Verify a signed tweet</h2>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="field">
+            <label>Tweet text</label>
+            <textarea id="v-msg" class="textarea" rows="4" placeholder="Exact tweet text..."></textarea>
+          </div>
+          <div class="field">
+            <label>Signature (Base64)</label>
+            <input id="v-sig" class="input mono" placeholder="//sig:... or Base64" />
+          </div>
+          <div class="field">
+            <label>Public key (Base64 for bio)</label>
+            <input id="v-pub" class="input mono" placeholder="ed25519: ... or Base64" />
+          </div>
+        </div>
+        <div class="row gap-2 mt-2">
+          <button id="btn-verify-client" class="btn btn--secondary">Verify in browser</button>
+          <button id="btn-verify-server" class="btn btn--muted">Verify via server</button>
+          <span id="verify-status" class="muted"></span>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <div id="toaster" class="toaster"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/tweetnacl@1.0.3/nacl-fast.min.js"></script>
+  <script src="/static/js/app.js" defer></script>
+</body>
+</html>
